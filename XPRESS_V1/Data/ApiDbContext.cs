@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XPRESS_V1.Models;
 using XPRESS_V1_Backend.Models;
 
 namespace XPRESS_V1_Backend.Data
@@ -13,10 +14,7 @@ namespace XPRESS_V1_Backend.Data
         public DbSet<TestTable> TestTables { get; set; } 
         public DbSet<Advait> Advait { get; set; }
         public DbSet<Test_Tables_George> TestTables_George { get; set; }
-<<<<<<< HEAD
         public DbSet<Riona> Riona { get; set; }
-=======
 
->>>>>>> development
     }
 }
