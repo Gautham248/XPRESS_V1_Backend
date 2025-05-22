@@ -15,6 +15,7 @@ namespace XPRESS_V1_Backend.Data
         public DbSet<Advait> Advait { get; set; }
         public DbSet<Test_Tables_George> TestTables_George { get; set; }
         public DbSet<Riona> Riona { get; set; }
+        public DbSet<Mahesh> Maheshs { get; set; }
 
     }
 }
