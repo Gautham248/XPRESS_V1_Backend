@@ -9,5 +9,6 @@ namespace XPRESS_V1_Backend.Data
         {
         }
         public DbSet<TestTable> TestTables { get; set; } 
+        public DbSet<Advait> Advait { get; set; }
     }
 }
