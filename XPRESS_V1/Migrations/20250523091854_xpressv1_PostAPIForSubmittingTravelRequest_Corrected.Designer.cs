@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using XPRESS_V1_Backend.Data;
@@ -11,9 +12,11 @@ using XPRESS_V1_Backend.Data;
 namespace XPRESS_V1_Backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250523091854_xpressv1_PostAPIForSubmittingTravelRequest_Corrected")]
+    partial class xpressv1_PostAPIForSubmittingTravelRequest_Corrected
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -365,7 +368,7 @@ namespace XPRESS_V1_Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RequestId"));
 
-                    b.Property<bool>("AttendedCct")
+                    b.Property<bool?>("AttendedCct")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Comments")
@@ -378,7 +381,7 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Property<int>("CurrentStatusId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("DepartureDate")
+                    b.Property<DateTime?>("DepartureDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DestinationCountry")
@@ -403,10 +406,10 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Property<bool>("IsAccommodationRequired")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDropoffRequired")
+                    b.Property<bool?>("IsDropoffRequired")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsPickupRequired")
+                    b.Property<bool?>("IsPickupRequired")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PickupLocation")
@@ -421,7 +424,7 @@ namespace XPRESS_V1_Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ReturnDate")
+                    b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("SelectedTicketOptionId")
@@ -451,7 +454,7 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Property<int>("TripTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UploadedTicketPdfPath")
