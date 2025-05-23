@@ -16,7 +16,9 @@ namespace XPRESS_V1_Backend.Repositories
 
         public async Task<AuditLog> CreateAuditLogAsync(AuditLog auditLog)
         {
-            auditLog.Timestamp = new DateTime(2025, 5, 23, 15, 1, 0);
+            auditLog.Timestamp = DateTime.UtcNow;
+            auditLog.Comments ??= string.Empty;
+
             await _context.AuditLogs.AddAsync(auditLog);
             await _context.SaveChangesAsync();
             return auditLog;
@@ -54,9 +56,9 @@ namespace XPRESS_V1_Backend.Repositories
             existingLog.OldStatusId = auditLog.OldStatusId;
             existingLog.NewStatusId = auditLog.NewStatusId;
             existingLog.ChangeDescription = auditLog.ChangeDescription;
-            existingLog.Comments = auditLog.Comments;
+            existingLog.Comments = auditLog.Comments ?? string.Empty;
             existingLog.IpAddress = auditLog.IpAddress;
-            existingLog.Timestamp = new DateTime(2025, 5, 23, 15, 1, 0);
+            existingLog.Timestamp = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return existingLog;

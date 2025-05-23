@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XPRESS_V1_Backend.Models
@@ -27,8 +28,14 @@ namespace XPRESS_V1_Backend.Models
 
         public string IpAddress { get; set; }
 
+        private DateTime _timestamp;
+
         [Required]
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp
+        {
+            get => _timestamp;
+            set => _timestamp = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+        }
 
         [ForeignKey("RequestId")]
         public TravelRequest TravelRequest { get; set; }
@@ -42,5 +49,4 @@ namespace XPRESS_V1_Backend.Models
         [ForeignKey("NewStatusId")]
         public RequestStatus NewStatus { get; set; }
     }
-
 }
