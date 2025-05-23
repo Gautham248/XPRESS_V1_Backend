@@ -10,8 +10,7 @@ namespace XPRESS_V1_Backend.Data
         {
         }
 
-
-        public DbSet<TestTable> TestTables { get; set; } 
+        public DbSet<TestTable> TestTables { get; set; }
         public DbSet<Advait> Advait { get; set; }
         public DbSet<Test_Tables_George> TestTables_George { get; set; }
         public DbSet<Riona> Riona { get; set; }
@@ -60,7 +59,7 @@ namespace XPRESS_V1_Backend.Data
             modelBuilder.Entity<TravelRequest>()
                 .HasOne(tr => tr.Project)
                 .WithMany(p => p.TravelRequests)
-                .HasForeignKey(tr => tr.ProjectCode);
+                .HasForeignKey(tr => tr.ProjectCode); // Reverted to ProjectCode (string)
 
             modelBuilder.Entity<TravelRequest>()
                 .HasOne(tr => tr.TravelMode)
@@ -111,7 +110,7 @@ namespace XPRESS_V1_Backend.Data
 
             modelBuilder.Entity<RequestApproval>()
                 .HasOne(ra => ra.NewStatus)
-                .WithMany(rs => rs.RequestApprovalsAsNewStatus) // Updated to new property name
+                .WithMany(rs => rs.RequestApprovalsAsNewStatus)
                 .HasForeignKey(ra => ra.NewStatusId);
 
             modelBuilder.Entity<AuditLog>()
@@ -127,11 +126,28 @@ namespace XPRESS_V1_Backend.Data
 
             modelBuilder.Entity<AuditLog>()
                 .HasOne(al => al.NewStatus)
-                .WithMany(rs => rs.AuditLogsAsNewStatus) // Updated to new property name
+                .WithMany(rs => rs.AuditLogsAsNewStatus)
                 .HasForeignKey(al => al.NewStatusId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Add indexes for frequently queried foreign keys
+            modelBuilder.Entity<TravelRequest>()
+                .HasIndex(tr => tr.EmployeeId);
+
+            modelBuilder.Entity<TravelRequest>()
+                .HasIndex(tr => tr.TravelTypeId);
+
+            modelBuilder.Entity<TravelRequest>()
+                .HasIndex(tr => tr.TripTypeId);
+
+            modelBuilder.Entity<TravelRequest>()
+                .HasIndex(tr => tr.ProjectCode); // Updated index to ProjectCode
+
+            modelBuilder.Entity<TravelRequest>()
+                .HasIndex(tr => tr.TravelModeId);
+
+            modelBuilder.Entity<TravelRequest>()
+                .HasIndex(tr => tr.CurrentStatusId);
         }
-
-
     }
 }
