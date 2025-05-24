@@ -10,6 +10,8 @@ namespace XPRESS_V1_Backend.Interfaces
         Task<IEnumerable<TravelRequest>> GetAllTravelRequestsAsync();
         Task<TravelRequest> UpdateTravelRequestAsync(int requestId, TravelRequest travelRequest);
         Task<bool> DeleteTravelRequestAsync(int requestId);
+
+     
         Task<IEnumerable<TicketOption>> GetTicketOptionsForRequestAsync(int requestId);
         Task<IEnumerable<RequestApproval>> GetApprovalsForRequestAsync(int requestId);
         Task<IEnumerable<AuditLog>> GetAuditLogsForRequestAsync(int requestId);
@@ -27,5 +29,7 @@ namespace XPRESS_V1_Backend.Interfaces
         Task<IEnumerable<object>> GetAllTestTablesGeorgeAsync();
         Task<IEnumerable<object>> GetAllRionaAsync();
         Task<IEnumerable<object>> GetAllMaheshsAsync();
+
+        Task UpdateTravelRequestStatusAsync(int requestId, int newStatusId, DateTime updatedAt); // Add this for status update
     }
 }
