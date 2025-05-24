@@ -177,6 +177,18 @@ namespace XPRESS_V1_Backend.Controllers
             return Ok(details);
         }
 
+        // Get TraveInfo Details
+        [HttpGet("travelinfo/{requestId}")]
+        public async Task<IActionResult> GetTravelInfoDetails(int requestId)
+        {
+            var travelInfo = await _travelRequestService.GetTravelInfoDetailsAsync(requestId);
+            if (travelInfo == null || !travelInfo.Any())
+            {
+                return NotFound($"No travel request found with RequestId = {requestId}");
+            }
+            return Ok(travelInfo);
+        }
+
         [HttpGet("employees")]
         public async Task<IActionResult> GetAllEmployees()
         {

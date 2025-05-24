@@ -197,6 +197,29 @@ namespace XPRESS_V1_Backend.Repositories
             return await query.ToListAsync();
         }
 
+        // Travel Info Join Query
+        public async Task<List<TravelInfoDetailsDTO>> GetTravelInfoDetailsAsync(int requestId)
+        {
+            var query = from tr in _context.TravelRequests
+                        join mode in _context.TravelModes on tr.TravelModeId equals mode.TravelModeId
+                        join type in _context.TravelTypes on tr.TravelTypeId equals type.TravelTypeId
+                        where tr.RequestId == requestId
+                        select new TravelInfoDetailsDTO
+                        {
+                            RequestId = tr.RequestId,
+                            DepartureDate = tr.DepartureDate,
+                            ReturnDate = tr.ReturnDate,
+                            Transportation = mode.TravelModeName,
+                            TravelTypeName = type.TravelTypeName,
+                            RequestCreateDate = tr.CreatedAt,
+                            PurposeOfTravel = tr.PurposeOfTravel,
+                            IsAccommodationRequired = tr.IsAccommodationRequired,
+                            FoodPreference = tr.FoodPreference,
+                            PickupLocation = tr.PickupLocation,
+                            DropoffLocation = tr.DropoffLocation
+                        };
+            return await query.ToListAsync();
+        }
 
         public async Task<IEnumerable<object>> GetAllTestTablesAsync()
         {
