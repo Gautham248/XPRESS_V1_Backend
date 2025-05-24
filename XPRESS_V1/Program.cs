@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
 // Register repositories as services
 builder.Services.AddScoped<ITravelRequestService, TravelRequestRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
+builder.Services.AddScoped<IUserService, UserRepository>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>

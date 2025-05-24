@@ -132,6 +132,14 @@ namespace XPRESS_V1_Backend.Controllers
             return Ok(travelRequests);
         }
 
+        // Get Travel Requests By Id
+        [HttpGet("{requestId}")]
+        public async Task<IActionResult> GetTravelRequestById(int requestId)
+        {
+            var travelRequest = await _travelRequestService.GetTravelRequestByIdAsync(requestId);
+            return Ok(travelRequest);
+        }
+
         [HttpGet("employees")]
         public async Task<IActionResult> GetAllEmployees()
         {
