@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
+using XPRESS_V1_Backend.Data;
 using XPRESS_V1_Backend.Interfaces;
 using XPRESS_V1_Backend.Models;
 using XPRESS_V1_Backend.Models.DTO;
-using System;
-using System.Threading.Tasks;
 
 namespace XPRESS_V1_Backend.Controllers
 {
@@ -14,11 +17,15 @@ namespace XPRESS_V1_Backend.Controllers
     {
         private readonly ITravelRequestService _travelRequestService;
         private readonly IAuditLogService _auditLogService;
+        private readonly ApiDbContext _context;
+        private readonly IMapper _mapper;
 
-        public TravelRequestController(ITravelRequestService travelRequestService, IAuditLogService auditLogService)
+        public TravelRequestController(ITravelRequestService travelRequestService, IAuditLogService auditLogService, ApiDbContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _travelRequestService = travelRequestService;
             _auditLogService = auditLogService;
+            _context = context;
         }
 
         // Helper method to ensure UTC DateTime
@@ -125,12 +132,30 @@ namespace XPRESS_V1_Backend.Controllers
 
 
 
+        //[HttpGet("travel-requests")]
+        //public async Task<IActionResult> GetAllTravelRequests()
+        //{
+        //    var travelRequests = await _travelRequestService.GetAllTravelRequestsAsync();
+        //    return Ok(travelRequests);
+        //}
         [HttpGet("travel-requests")]
-        public async Task<IActionResult> GetAllTravelRequests()
+    
+        public async Task<ActionResult<IEnumerable<TravelRequestDto>>> GetTravelRequestsDto()
         {
-            var travelRequests = await _travelRequestService.GetAllTravelRequestsAsync();
-            return Ok(travelRequests);
+            var travelRequests = await _context.TravelRequests
+                .Include(t => t.Employee)
+                .Include(t => t.TravelType)
+                .Include(t => t.TripType)
+                .Include(t => t.Project)
+                .Include(t => t.TravelMode)
+                .Include(t => t.CurrentStatus)
+                .Include(t => t.SelectedTicketOption)
+                .ToListAsync();
+
+            var travelRequestDtos = _mapper.Map<List<TravelRequestDto>>(travelRequests);
+            return Ok(travelRequestDtos);
         }
+
 
         [HttpGet("employees")]
         public async Task<IActionResult> GetAllEmployees()
