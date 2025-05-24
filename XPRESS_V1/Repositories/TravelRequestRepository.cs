@@ -23,6 +23,19 @@ namespace XPRESS_V1_Backend.Repositories
             return travelRequest;
         }
 
+        //public async Task<TravelRequest> GetTravelRequestByIdAsync(int requestId)
+        //{
+        //    return await _context.TravelRequests
+        //        .Include(tr => tr.Employee)
+        //        .Include(tr => tr.TravelType)
+        //        .Include(tr => tr.TripType)
+        //        .Include(tr => tr.Project)
+        //        .Include(tr => tr.TravelMode)
+        //        .Include(tr => tr.CurrentStatus)
+        //        .Include(tr => tr.SelectedTicketOption)
+        //        .FirstOrDefaultAsync(tr => tr.RequestId == requestId);
+        //}
+        
         public async Task<TravelRequest> GetTravelRequestByIdAsync(int requestId)
         {
             return await _context.TravelRequests
@@ -32,8 +45,20 @@ namespace XPRESS_V1_Backend.Repositories
                 .Include(tr => tr.Project)
                 .Include(tr => tr.TravelMode)
                 .Include(tr => tr.CurrentStatus)
-                .Include(tr => tr.SelectedTicketOption)
                 .FirstOrDefaultAsync(tr => tr.RequestId == requestId);
+        }
+
+        public async Task UpdateTravelRequestStatusAsync(int requestId, int newStatusId, DateTime updatedAt)
+        {
+            var travelRequest = await _context.TravelRequests.FindAsync(requestId);
+            if (travelRequest == null)
+            {
+                throw new Exception("Travel request not found.");
+            }
+
+            travelRequest.CurrentStatusId = newStatusId;
+            travelRequest.UpdatedAt = updatedAt;
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<TravelRequest>> GetAllTravelRequestsAsync()

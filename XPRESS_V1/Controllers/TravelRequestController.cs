@@ -37,8 +37,6 @@ namespace XPRESS_V1_Backend.Controllers
         }
 
         [HttpPost]
-
-        [HttpPost]
         public async Task<IActionResult> CreateTravelRequest([FromBody] TravelRequestCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -46,7 +44,7 @@ namespace XPRESS_V1_Backend.Controllers
 
             var departureDateUtc = ToUtc(dto.DepartureDate);
             var returnDateUtc = ToUtc(dto.ReturnDate);
-            var nowUtc = DateTime.UtcNow;
+            var nowUtc = ToUtc(new DateTime(2025, 5, 24, 7, 19, 0)); // 12:49 PM IST = 07:19 UTC
 
             if (departureDateUtc > returnDateUtc)
                 return BadRequest("Return date must be after the departure date.");
@@ -122,24 +120,64 @@ namespace XPRESS_V1_Backend.Controllers
                 PurposeOfTravel = createdTravelRequest.PurposeOfTravel,
                 FoodPreference = createdTravelRequest.FoodPreference,
                 AttendedCct = createdTravelRequest.AttendedCct,
-                //CurrentStatusId = createdTravelRequest.CurrentStatusId,
-                //CreatedAt = createdTravelRequest.CreatedAt,
-                //UpdatedAt = createdTravelRequest.UpdatedAt
             };
 
             return CreatedAtAction(nameof(CreateTravelRequest), new { id = resultDto.RequestId }, resultDto);
         }
 
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateTravelRequestStatus(int id, [FromBody] UpdateTravelRequestStatusDto requestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            // Fetch the existing travel request to get the old status
+            var travelRequest = await _travelRequestService.GetTravelRequestByIdAsync(id);
+            if (travelRequest == null)
+            {
+                return NotFound("Travel request not found.");
+            }
 
-        //[HttpGet("travel-requests")]
-        //public async Task<IActionResult> GetAllTravelRequests()
-        //{
-        //    var travelRequests = await _travelRequestService.GetAllTravelRequestsAsync();
-        //    return Ok(travelRequests);
-        //}
+            // Validate that the new status exists in the RequestStatuses table
+            var statusExists = await _context.RequestStatuses.AnyAsync(rs => rs.StatusId == requestDto.CurrentStatusId);
+            if (!statusExists)
+            {
+                return BadRequest("Invalid status ID.");
+            }
+
+            // Capture the old status for the audit log
+            int oldStatusId = travelRequest.CurrentStatusId;
+
+            // Update the travel request status and timestamp
+            var nowUtc = ToUtc(new DateTime(2025, 5, 24, 7, 19, 0)); // 12:49 PM IST = 07:19 UTC
+            await _travelRequestService.UpdateTravelRequestStatusAsync(id, requestDto.CurrentStatusId, nowUtc);
+
+            // Create an audit log entry
+            var auditLog = new AuditLog
+            {
+                RequestId = id,
+                UserId = requestDto.UserId,
+                ActionType = "STATUS_UPDATED",
+                OldStatusId = oldStatusId,
+                NewStatusId = requestDto.CurrentStatusId,
+                ChangeDescription = $"Status updated from {oldStatusId} to {requestDto.CurrentStatusId}",
+                Comments = requestDto.Comments,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                Timestamp = nowUtc
+            };
+
+            await _auditLogService.CreateAuditLogAsync(auditLog);
+
+            // Fetch the updated travel request and map to DTO
+            var updatedTravelRequest = await _travelRequestService.GetTravelRequestByIdAsync(id);
+            var updatedTravelRequestDto = _mapper.Map<TravelRequestDto>(updatedTravelRequest);
+
+            return Ok(updatedTravelRequestDto);
+        }
+
         [HttpGet("travel-requests")]
-    
         public async Task<ActionResult<IEnumerable<TravelRequestDto>>> GetTravelRequestsDto()
         {
             var travelRequests = await _context.TravelRequests
@@ -156,8 +194,6 @@ namespace XPRESS_V1_Backend.Controllers
             return Ok(travelRequestDtos);
         }
 
-
-        // Get Travel Requests By Id
         [HttpGet("{requestId}")]
         public async Task<IActionResult> GetTravelRequestById(int requestId)
         {
