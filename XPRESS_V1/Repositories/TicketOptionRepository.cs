@@ -26,7 +26,6 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.TicketOptions
                 .Include(to => to.TravelRequest)
-                .Include(to => to.Creator)
                 .FirstOrDefaultAsync(to => to.OptionId == optionId);
         }
 
@@ -34,7 +33,6 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.TicketOptions
                 .Include(to => to.TravelRequest)
-                .Include(to => to.Creator)
                 .ToListAsync();
         }
 
@@ -46,15 +44,6 @@ namespace XPRESS_V1_Backend.Repositories
 
             existingOption.RequestId = ticketOption.RequestId;
             existingOption.OptionDescription = ticketOption.OptionDescription;
-            existingOption.AirlineName = ticketOption.AirlineName;
-            existingOption.FlightNumber = ticketOption.FlightNumber;
-            existingOption.DepartureTime = ticketOption.DepartureTime;
-            existingOption.ArrivalTime = ticketOption.ArrivalTime;
-            existingOption.Price = ticketOption.Price;
-            existingOption.BookingClass = ticketOption.BookingClass;
-            existingOption.AdditionalDetails = ticketOption.AdditionalDetails;
-            existingOption.IsAvailable = ticketOption.IsAvailable;
-            existingOption.CreatedBy = ticketOption.CreatedBy;
 
             await _context.SaveChangesAsync();
             return existingOption;
@@ -75,7 +64,6 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.TicketOptions
                 .Where(to => to.RequestId == requestId)
-                .Include(to => to.Creator)
                 .ToListAsync();
         }
     }

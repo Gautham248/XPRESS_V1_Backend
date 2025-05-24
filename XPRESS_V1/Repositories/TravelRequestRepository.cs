@@ -127,7 +127,7 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.TicketOptions
                 .Where(to => to.RequestId == requestId)
-                .Include(to => to.Creator)
+                //.Include(to => to.Creator)
                 .ToListAsync();
         }
 
