@@ -12,6 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 // Register repositories as services
 builder.Services.AddScoped<ITravelRequestService, TravelRequestRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
