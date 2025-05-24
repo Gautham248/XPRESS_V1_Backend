@@ -2,6 +2,7 @@
 using XPRESS_V1_Backend.Data;
 using XPRESS_V1_Backend.Interfaces;
 using XPRESS_V1_Backend.Models;
+using XPRESS_V1_Backend.Models.DTO;
 
 namespace XPRESS_V1_Backend.Repositories
 {
@@ -171,6 +172,31 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.RequestStatuses.ToListAsync();
         }
+
+        // Info Banner Join Query
+        public async Task<List<TravelInfoBannerDTO>> GetTravelInfoBannerDetailsAsync(int requestId)
+        {
+            var query = from tr in _context.TravelRequests
+                        join user in _context.Users on tr.EmployeeId equals user.EmployeeId
+                        join proj in _context.Projects on tr.ProjectCode equals proj.ProjectCode
+                        join mode in _context.TravelModes on tr.TravelModeId equals mode.TravelModeId
+                        where tr.RequestId == requestId
+                        select new TravelInfoBannerDTO
+                        {
+                            RequestId = tr.RequestId,
+                            EmployeeName = user.FirstName + " " + user.LastName,
+                            DepartmentName = user.Department,
+                            ProjectCode = proj.ProjectCode,
+                            TravelModeName = mode.TravelModeName,
+                            SourcePlace = tr.SourcePlace,
+                            SourceCountry = tr.SourceCountry,
+                            DestinationPlace = tr.DestinationPlace,
+                            DestinationCountry = tr.DestinationCountry
+                        };
+
+            return await query.ToListAsync();
+        }
+
 
         public async Task<IEnumerable<object>> GetAllTestTablesAsync()
         {
