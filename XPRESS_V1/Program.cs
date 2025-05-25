@@ -20,6 +20,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ITravelRequestService, TravelRequestRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
 builder.Services.AddScoped<IUserService, UserRepository>();
+builder.Services.AddScoped<ITicketOptionService, TicketOptionRepository>();
 
 // For CORS error resolve
 builder.Services.AddCors(options =>
