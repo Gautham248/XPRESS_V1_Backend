@@ -8,6 +8,7 @@ using XPRESS_V1_Backend.Data;
 using XPRESS_V1_Backend.Interfaces;
 using XPRESS_V1_Backend.Models;
 using XPRESS_V1_Backend.Models.DTO;
+using XPRESS_V1_Backend.Repositories;
 
 namespace XPRESS_V1_Backend.Controllers
 {
@@ -244,6 +245,15 @@ namespace XPRESS_V1_Backend.Controllers
         {
             var projects = await _travelRequestService.GetAllProjectsAsync();
             return Ok(projects);
+        }
+        [HttpGet("Calendar")]
+        public async Task<ActionResult<IEnumerable<CalendarTravelRequestDTO>>> GetFilteredTravelRequests()
+        {
+                // Use the injected _travelRequestService instead of directly calling TravelRequestRepository
+             var filteredTravelRequests = await _travelRequestService.GetCalendarTravelRequestsAsync();
+              return Ok(filteredTravelRequests);
+            
+           
         }
     }
 }

@@ -270,5 +270,22 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.Maheshs.ToListAsync<object>();
         }
+        public async Task<IEnumerable<CalendarTravelRequestDTO>> GetCalendarTravelRequestsAsync()
+        {
+            return await _context.TravelRequests
+                .Include(tr => tr.Employee) // Join with User table for EmployeeName
+                .Select(tr => new CalendarTravelRequestDTO
+                {
+                    RequestId = tr.RequestId,
+                    DepartureDate = tr.DepartureDate,
+                    ReturnDate = tr.ReturnDate,
+                    EmployeeName = tr.Employee.FirstName, // Adjust if you need FirstName + LastName
+                    SourcePlace = tr.SourcePlace,
+                    SourceCountry = tr.SourceCountry,
+                    DestinationPlace = tr.DestinationPlace,
+                    DestinationCountry = tr.DestinationCountry
+                })
+                .ToListAsync();
+        }
     }
 }
