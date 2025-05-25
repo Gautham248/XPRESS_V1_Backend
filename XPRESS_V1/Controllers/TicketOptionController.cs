@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using XPRESS_V1_Backend.Interfaces;
 using XPRESS_V1_Backend.Models;
 using XPRESS_V1_Backend.Models.DTO;
@@ -34,13 +35,21 @@ namespace XPRESS_V1_Backend.Controllers
         }
 
         // Create a new ticket option
-        [HttpPost]
-        public async Task<IActionResult> CreateTicketOption([FromBody] TicketOptionDTO dto)
+        [HttpPost("{requestId}/ticketoption")]
+        public async Task<IActionResult> CreateTicketOption(int requestId, [FromBody] TicketOptionDTO dto)
         {
+            var travelRequest = await _travelRequestService.GetTravelRequestByIdAsync(requestId);
+            if (travelRequest == null)
+            {
+                return NotFound("Travel request not found.");
+            }
+
             var ticketOption = new TicketOption
             {
-                RequestId = dto.RequestId,
-                OptionDescription = dto.OptionDescription
+                RequestId = requestId,
+                OptionDescription = dto.OptionDescription,
+                CreatedAt = DateTime.UtcNow,
+                IsSelected = false // default value
             };
 
             var created = await _ticketOptionService.CreateTicketOptionAsync(ticketOption);
@@ -49,11 +58,17 @@ namespace XPRESS_V1_Backend.Controllers
             {
                 OptionId = created.OptionId,
                 RequestId = created.RequestId,
-                OptionDescription = created.OptionDescription
+                OptionDescription = created.OptionDescription,
+                IsSelected = created.IsSelected
             };
+
+            // Update travel request status (e.g., to "Options Created")
+            //var statusId = 4; // Replace with actual status ID
+            //await _travelRequestService.UpdateTravelRequestStatusAsync(requestId, statusId, DateTime.UtcNow);
 
             return CreatedAtAction(nameof(GetTicketOptionById), new { optionId = created.OptionId }, resultDto);
         }
+
 
         // Get ticket option by ID
         [HttpGet("{optionId}")]
@@ -126,6 +141,66 @@ namespace XPRESS_V1_Backend.Controllers
 
             return NoContent();
         }
+
+
+        // ------------- Ticket Selection Complete Code ------------- 
+        // PUT /api/ticketoptions/{optionId}/select
+        // DTO
+        //public class TicketOptionSelectionDto
+        //{
+        //    public int UserId { get; set; }
+        //    public string Comments { get; set; }
+        //}
+
+        //// API
+        //[HttpPut("{optionId}/select")]
+        //public async Task<IActionResult> SelectTicketOption(int optionId, [FromBody] TicketOptionSelectionDto dto)
+        //{
+        //    var selectedOption = await _ticketOptionService.GetTicketOptionByIdAsync(optionId);
+        //    if (selectedOption == null)
+        //        return NotFound("Ticket option not found.");
+
+        //    var requestId = selectedOption.RequestId;
+
+        //    // Deselect all other options for this request
+        //    await _ticketOptionService.DeselectAllOptionsForRequestAsync(requestId);
+
+        //    // Select the chosen one
+        //    selectedOption.IsSelected = true;
+        //    await _ticketOptionService.UpdateTicketOptionAsync(selectedOption);
+
+        //    // Optional: update travel request status
+        //    var nowUtc = DateTime.UtcNow;
+        //    await _travelRequestService.UpdateTravelRequestStatusAsync(requestId, statusId: 5, nowUtc); // 5 = Option Selected
+
+        //    // Optional: audit log
+        //    var auditLog = new AuditLog
+        //    {
+        //        RequestId = requestId,
+        //        UserId = dto.UserId,
+        //        ActionType = "OPTION_SELECTED",
+        //        ChangeDescription = $"Ticket option {optionId} selected.",
+        //        Comments = dto.Comments,
+        //        IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+        //        Timestamp = nowUtc
+        //    };
+        //    await _auditLogService.CreateAuditLogAsync(auditLog);
+
+        //    return Ok(new { message = $"Option {optionId} selected successfully." });
+        //}
+        //public async Task DeselectAllOptionsForRequestAsync(int requestId)
+        //{
+        //    var options = await _context.TicketOptions
+        //        .Where(o => o.RequestId == requestId)
+        //        .ToListAsync();
+
+        //    foreach (var option in options)
+        //    {
+        //        option.IsSelected = false;
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //}
 
 
     }
