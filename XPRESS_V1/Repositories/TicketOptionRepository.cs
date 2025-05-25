@@ -16,7 +16,7 @@ namespace XPRESS_V1_Backend.Repositories
 
         public async Task<TicketOption> CreateTicketOptionAsync(TicketOption ticketOption)
         {
-            ticketOption.CreatedAt = new DateTime(2025, 5, 23, 13, 46, 0);
+            ticketOption.CreatedAt = DateTime.UtcNow;
             await _context.TicketOptions.AddAsync(ticketOption);
             await _context.SaveChangesAsync();
             return ticketOption;
