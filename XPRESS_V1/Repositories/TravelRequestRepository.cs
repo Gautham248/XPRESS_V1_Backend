@@ -283,7 +283,8 @@ namespace XPRESS_V1_Backend.Repositories
                     SourcePlace = tr.SourcePlace,
                     SourceCountry = tr.SourceCountry,
                     DestinationPlace = tr.DestinationPlace,
-                    DestinationCountry = tr.DestinationCountry
+                    DestinationCountry = tr.DestinationCountry,
+                    CurrentStatusName = tr.CurrentStatus != null ? tr.CurrentStatus.StatusName : "Unknown"
                 })
                 .ToListAsync();
         }
