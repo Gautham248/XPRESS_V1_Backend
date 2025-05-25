@@ -1,4 +1,5 @@
 ﻿using XPRESS_V1_Backend.Models;
+using XPRESS_V1_Backend.Models.DTO;
 
 namespace XPRESS_V1_Backend.Interfaces
 {
@@ -21,6 +22,8 @@ namespace XPRESS_V1_Backend.Interfaces
         Task<IEnumerable<TravelMode>> GetAllTravelModesAsync();
         Task<IEnumerable<TripType>> GetAllTripTypesAsync();
         Task<IEnumerable<RequestStatus>> GetAllRequestStatusesAsync();
+        Task<List<TravelInfoBannerDTO>> GetTravelInfoBannerDetailsAsync(int requestId);
+        Task<List<TravelInfoDetailsDTO>> GetTravelInfoDetailsAsync(int requestId);
         Task<IEnumerable<object>> GetAllTestTablesAsync();
         Task<IEnumerable<object>> GetAllAdvaitAsync();
         Task<IEnumerable<object>> GetAllTestTablesGeorgeAsync();
