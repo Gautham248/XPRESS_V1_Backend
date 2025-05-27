@@ -10,8 +10,8 @@ namespace XPRESS_V1_Backend.Interfaces
         Task<IEnumerable<TravelRequest>> GetAllTravelRequestsAsync();
         Task<TravelRequest> UpdateTravelRequestAsync(int requestId, TravelRequest travelRequest);
         Task<bool> DeleteTravelRequestAsync(int requestId);
-
-     
+        
+        Task<IEnumerable<CalendarTravelRequestDTO>> GetCalendarTravelRequestsAsync();
         Task<IEnumerable<TicketOption>> GetTicketOptionsForRequestAsync(int requestId);
         Task<IEnumerable<RequestApproval>> GetApprovalsForRequestAsync(int requestId);
         Task<IEnumerable<AuditLog>> GetAuditLogsForRequestAsync(int requestId);
