@@ -30,7 +30,8 @@ namespace XPRESS_V1_Backend.Controllers
             {
                 OptionId = o.OptionId,
                 RequestId = o.RequestId,
-                OptionDescription = o.OptionDescription
+                OptionDescription = o.OptionDescription,
+                IsSelected = o.IsSelected
             }));
         }
 
@@ -148,40 +149,33 @@ namespace XPRESS_V1_Backend.Controllers
 
 
         // API
-        [HttpPut("{optionId}/select")]
-        public async Task<IActionResult> SelectTicketOption(int optionId, [FromBody] TicketOptionSelectionDTO dto)
+        [HttpPut("{requestId}/{optionId}/select")]
+        public async Task<IActionResult> SelectTicketOption(int requestId, int optionId, [FromBody] TicketOptionSelectionDTO dto)
         {
-            var selectedOption = await _ticketOptionService.GetTicketOptionByIdAsync(optionId);
-            if (selectedOption == null)
-                return NotFound("Ticket option not found.");
-
-            var requestId = selectedOption.RequestId;
+            var travelRequest = await _travelRequestService.GetTravelRequestByIdAsync(requestId);
+            if (travelRequest == null)
+            {
+                return NotFound("Travel request not found.");
+            }
 
             // Deselect all other options for this request
             await _ticketOptionService.DeselectAllOptionsForRequestAsync(requestId);
 
-            // Select the chosen one
-            await _ticketOptionService.SelectTicketOptionAsync(optionId);
-            await _ticketOptionService.UpdateTicketOptionAsync(selectedOption.OptionId, selectedOption);
+            var selectedOption = await _ticketOptionService.GetTicketOptionByIdAsync(optionId);
+            if (selectedOption == null || selectedOption.RequestId != requestId)
+            {
+                return NotFound("Ticket option not found for this request.");
+            }
 
-            // Optional: update travel request status
-            //var nowUtc = DateTime.UtcNow;
-            //await _travelRequestService.UpdateTravelRequestStatusAsync(requestId, statusId: 5, nowUtc); // 5 = Option Selected
+            // Select the chosen option
+            await _ticketOptionService.SelectTicketOptionAsync(selectedOption.OptionId);
 
-            // Optional: audit log
-            //var auditLog = new AuditLog
-            //{
-            //    RequestId = requestId,
-            //    UserId = dto.UserId,
-            //    ActionType = "OPTION_SELECTED",
-            //    ChangeDescription = $"Ticket option {optionId} selected.",
-            //    Comments = dto.Comments,
-            //    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-            //    Timestamp = nowUtc
-            //};
-            //await _auditLogService.CreateAuditLogAsync(auditLog);
+            // Update the travel request
+            travelRequest.SelectedTicketOptionId = selectedOption.OptionId;
+            await _travelRequestService.UpdateTravelRequestAsync(requestId, travelRequest);
 
-            return Ok(new { message = $"Option {optionId} selected successfully." });
+            return Ok(new { message = $"Option {selectedOption.OptionId} selected successfully." });
         }
+
     }
 }
