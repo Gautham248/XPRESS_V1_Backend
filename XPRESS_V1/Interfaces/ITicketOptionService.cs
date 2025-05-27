@@ -10,6 +10,8 @@ namespace XPRESS_V1_Backend.Interfaces
         Task<TicketOption> UpdateTicketOptionAsync(int optionId, TicketOption ticketOption);
         Task<bool> DeleteTicketOptionAsync(int optionId);
         Task<IEnumerable<TicketOption>> GetTicketOptionsByRequestAsync(int requestId);
+        Task<bool> SelectTicketOptionAsync(int optionId);
+        Task DeselectAllOptionsForRequestAsync(int requestId);
     }
 
 }
