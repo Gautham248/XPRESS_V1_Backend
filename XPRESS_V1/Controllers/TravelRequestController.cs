@@ -195,11 +195,30 @@ namespace XPRESS_V1_Backend.Controllers
             return Ok(travelRequestDtos);
         }
 
+        //[HttpGet("{requestId}")]
+        //public async Task<IActionResult> GetTravelRequestById(int requestId)
+        //{
+        //    var travelRequest = await _travelRequestService.GetTravelRequestByIdAsync(requestId);
+        //    return Ok(travelRequest);
+        //}
         [HttpGet("{requestId}")]
-        public async Task<IActionResult> GetTravelRequestById(int requestId)
+        public async Task<ActionResult<TravelRequestDto>> GetTravelRequestById(int requestId)
         {
-            var travelRequest = await _travelRequestService.GetTravelRequestByIdAsync(requestId);
-            return Ok(travelRequest);
+            var travelRequest = await _context.TravelRequests
+                .Include(t => t.Employee)
+                .Include(t => t.TravelType)
+                .Include(t => t.TripType)
+                .Include(t => t.Project)
+                .Include(t => t.TravelMode)
+                .Include(t => t.CurrentStatus)
+                .Include(t => t.SelectedTicketOption)
+                .FirstOrDefaultAsync(t => t.RequestId == requestId);
+
+            if (travelRequest == null)
+                return NotFound($"Travel request with ID {requestId} not found.");
+
+            var travelRequestDto = _mapper.Map<TravelRequestDto>(travelRequest);
+            return Ok(travelRequestDto);
         }
 
         // Get InfoBanner Details

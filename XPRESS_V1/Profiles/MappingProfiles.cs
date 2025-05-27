@@ -12,7 +12,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TripTypeName, opt => opt.MapFrom(src => src.TripType.Description))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectName))
             .ForMember(dest => dest.TravelModeName, opt => opt.MapFrom(src => src.TravelMode.Description))
-            .ForMember(dest => dest.CurrentStatusName, opt => opt.MapFrom(src => src.CurrentStatus.StatusName));
-            //.ForMember(dest => dest.SelectedTicketOptionName, opt => opt.MapFrom(src => src.SelectedTicketOption != null ? src.SelectedTicketOption.AirlineName : null));
+            .ForMember(dest => dest.CurrentStatusName, opt => opt.MapFrom(src => src.CurrentStatus.StatusName))
+            .ForMember(dest => dest.SelectedTicketOptionId, opt => opt.MapFrom(src => src.SelectedTicketOptionId));  // correct mapping
     }
 }
