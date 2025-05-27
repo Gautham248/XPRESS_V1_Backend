@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using XPRESS_V1_Backend.Data;
@@ -11,9 +12,11 @@ using XPRESS_V1_Backend.Data;
 namespace XPRESS_V1_Backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524105800_TicketOptionEntityChange")]
+    partial class TicketOptionEntityChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,107 +109,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AuditLogs");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Document", b =>
-                {
-                    b.Property<int>("DocumentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DocumentID"));
-
-                    b.Property<string>("Comments")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DocumentLink")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DocumentNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("DocumentTypeID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EmployeeID")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool?>("IsValid")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("IssuingAuthority")
-                        .HasColumnType("text");
-
-                    b.Property<string>("IssuingCountry")
-                        .HasColumnType("text");
-
-                    b.Property<string>("IssuingPost")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("ModifiedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VisaClass")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("DocumentID");
-
-                    b.HasIndex("DocumentTypeID");
-
-                    b.HasIndex("EmployeeID");
-
-                    b.ToTable("Documents");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.DocumentType", b =>
-                {
-                    b.Property<int>("DocumentTypeID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DocumentTypeID"));
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("RequiresExpiry")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TypeName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("DocumentTypeID");
-
-                    b.ToTable("DocumentTypes");
                 });
 
             modelBuilder.Entity("XPRESS_V1_Backend.Models.Mahesh", b =>
@@ -680,25 +582,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Document", b =>
-                {
-                    b.HasOne("XPRESS_V1_Backend.Models.DocumentType", "DocumentType")
-                        .WithMany("Documents")
-                        .HasForeignKey("DocumentTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("XPRESS_V1_Backend.Models.User", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DocumentType");
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("XPRESS_V1_Backend.Models.RequestApproval", b =>
                 {
                     b.HasOne("XPRESS_V1_Backend.Models.User", "Approver")
@@ -821,11 +704,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Navigation("DuHead");
 
                     b.Navigation("ReportingManager");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.DocumentType", b =>
-                {
-                    b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("XPRESS_V1_Backend.Models.Project", b =>

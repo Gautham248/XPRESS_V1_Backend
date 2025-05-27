@@ -2,6 +2,7 @@
 using XPRESS_V1_Backend.Data;
 using XPRESS_V1_Backend.Interfaces;
 using XPRESS_V1_Backend.Models;
+using XPRESS_V1_Backend.Models.DTO;
 
 namespace XPRESS_V1_Backend.Repositories
 {
@@ -23,6 +24,19 @@ namespace XPRESS_V1_Backend.Repositories
             return travelRequest;
         }
 
+        //public async Task<TravelRequest> GetTravelRequestByIdAsync(int requestId)
+        //{
+        //    return await _context.TravelRequests
+        //        .Include(tr => tr.Employee)
+        //        .Include(tr => tr.TravelType)
+        //        .Include(tr => tr.TripType)
+        //        .Include(tr => tr.Project)
+        //        .Include(tr => tr.TravelMode)
+        //        .Include(tr => tr.CurrentStatus)
+        //        .Include(tr => tr.SelectedTicketOption)
+        //        .FirstOrDefaultAsync(tr => tr.RequestId == requestId);
+        //}
+        
         public async Task<TravelRequest> GetTravelRequestByIdAsync(int requestId)
         {
             return await _context.TravelRequests
@@ -32,8 +46,20 @@ namespace XPRESS_V1_Backend.Repositories
                 .Include(tr => tr.Project)
                 .Include(tr => tr.TravelMode)
                 .Include(tr => tr.CurrentStatus)
-                .Include(tr => tr.SelectedTicketOption)
                 .FirstOrDefaultAsync(tr => tr.RequestId == requestId);
+        }
+
+        public async Task UpdateTravelRequestStatusAsync(int requestId, int newStatusId, DateTime updatedAt)
+        {
+            var travelRequest = await _context.TravelRequests.FindAsync(requestId);
+            if (travelRequest == null)
+            {
+                throw new Exception("Travel request not found.");
+            }
+
+            travelRequest.CurrentStatusId = newStatusId;
+            travelRequest.UpdatedAt = updatedAt;
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<TravelRequest>> GetAllTravelRequestsAsync()
@@ -101,7 +127,7 @@ namespace XPRESS_V1_Backend.Repositories
         {
             return await _context.TicketOptions
                 .Where(to => to.RequestId == requestId)
-                .Include(to => to.Creator)
+                //.Include(to => to.Creator)
                 .ToListAsync();
         }
 
@@ -172,6 +198,54 @@ namespace XPRESS_V1_Backend.Repositories
             return await _context.RequestStatuses.ToListAsync();
         }
 
+        // Info Banner Join Query
+        public async Task<List<TravelInfoBannerDTO>> GetTravelInfoBannerDetailsAsync(int requestId)
+        {
+            var query = from tr in _context.TravelRequests
+                        join user in _context.Users on tr.EmployeeId equals user.EmployeeId
+                        join proj in _context.Projects on tr.ProjectCode equals proj.ProjectCode
+                        join mode in _context.TravelModes on tr.TravelModeId equals mode.TravelModeId
+                        where tr.RequestId == requestId
+                        select new TravelInfoBannerDTO
+                        {
+                            RequestId = tr.RequestId,
+                            EmployeeName = user.FirstName + " " + user.LastName,
+                            DepartmentName = user.Department,
+                            ProjectCode = proj.ProjectCode,
+                            TravelModeName = mode.TravelModeName,
+                            SourcePlace = tr.SourcePlace,
+                            SourceCountry = tr.SourceCountry,
+                            DestinationPlace = tr.DestinationPlace,
+                            DestinationCountry = tr.DestinationCountry
+                        };
+
+            return await query.ToListAsync();
+        }
+
+        // Travel Info Join Query
+        public async Task<List<TravelInfoDetailsDTO>> GetTravelInfoDetailsAsync(int requestId)
+        {
+            var query = from tr in _context.TravelRequests
+                        join mode in _context.TravelModes on tr.TravelModeId equals mode.TravelModeId
+                        join type in _context.TravelTypes on tr.TravelTypeId equals type.TravelTypeId
+                        where tr.RequestId == requestId
+                        select new TravelInfoDetailsDTO
+                        {
+                            RequestId = tr.RequestId,
+                            DepartureDate = tr.DepartureDate,
+                            ReturnDate = tr.ReturnDate,
+                            Transportation = mode.TravelModeName,
+                            TravelTypeName = type.TravelTypeName,
+                            RequestCreateDate = tr.CreatedAt,
+                            PurposeOfTravel = tr.PurposeOfTravel,
+                            IsAccommodationRequired = tr.IsAccommodationRequired,
+                            FoodPreference = tr.FoodPreference,
+                            PickupLocation = tr.PickupLocation,
+                            DropoffLocation = tr.DropoffLocation
+                        };
+            return await query.ToListAsync();
+        }
+
         public async Task<IEnumerable<object>> GetAllTestTablesAsync()
         {
             return await _context.TestTables.ToListAsync<object>();
@@ -195,6 +269,24 @@ namespace XPRESS_V1_Backend.Repositories
         public async Task<IEnumerable<object>> GetAllMaheshsAsync()
         {
             return await _context.Maheshs.ToListAsync<object>();
+        }
+        public async Task<IEnumerable<CalendarTravelRequestDTO>> GetCalendarTravelRequestsAsync()
+        {
+            return await _context.TravelRequests
+                .Include(tr => tr.Employee) // Join with User table for EmployeeName
+                .Select(tr => new CalendarTravelRequestDTO
+                {
+                    RequestId = tr.RequestId,
+                    DepartureDate = tr.DepartureDate,
+                    ReturnDate = tr.ReturnDate,
+                    EmployeeName = tr.Employee.FirstName, // Adjust if you need FirstName + LastName
+                    SourcePlace = tr.SourcePlace,
+                    SourceCountry = tr.SourceCountry,
+                    DestinationPlace = tr.DestinationPlace,
+                    DestinationCountry = tr.DestinationCountry,
+                    CurrentStatusName = tr.CurrentStatus != null ? tr.CurrentStatus.StatusName : "Unknown"
+                })
+                .ToListAsync();
         }
     }
 }

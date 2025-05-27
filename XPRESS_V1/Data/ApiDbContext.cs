@@ -94,10 +94,9 @@ namespace XPRESS_V1_Backend.Data
                 .WithOne(al => al.TravelRequest)
                 .HasForeignKey(al => al.RequestId);
 
-            modelBuilder.Entity<TicketOption>()
-                .HasOne(to => to.Creator)
-                .WithMany(u => u.CreatedTicketOptions)
-                .HasForeignKey(to => to.CreatedBy);
+            //modelBuilder.Entity<TicketOption>()
+            //    .WithMany(u => u.CreatedTicketOptions)
+            //    .HasForeignKey(to => to.CreatedBy);
 
             modelBuilder.Entity<RequestApproval>()
                 .HasOne(ra => ra.Approver)
