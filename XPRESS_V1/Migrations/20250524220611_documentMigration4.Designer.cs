@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using XPRESS_V1_Backend.Data;
@@ -11,9 +12,11 @@ using XPRESS_V1_Backend.Data;
 namespace XPRESS_V1_Backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524220611_documentMigration4")]
+    partial class documentMigration4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,7 +141,7 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Property<int>("EmployeeID")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("ExpiryDate")
+                    b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool?>("IsValid")
@@ -153,19 +156,11 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Property<string>("IssuingCountry")
                         .HasColumnType("text");
 
-                    b.Property<string>("IssuingPost")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int?>("ModifiedBy")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VisaClass")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("DocumentID");
 

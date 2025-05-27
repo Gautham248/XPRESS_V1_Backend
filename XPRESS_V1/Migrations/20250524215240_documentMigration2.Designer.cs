@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using XPRESS_V1_Backend.Data;
@@ -11,9 +12,11 @@ using XPRESS_V1_Backend.Data;
 namespace XPRESS_V1_Backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524215240_documentMigration2")]
+    partial class documentMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,15 +120,17 @@ namespace XPRESS_V1_Backend.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DocumentID"));
 
                     b.Property<string>("Comments")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("CreatedBy")
+                    b.Property<int>("CreatedBy")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DocumentLink")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("DocumentNumber")
@@ -138,34 +143,28 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Property<int>("EmployeeID")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("ExpiryDate")
+                    b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool?>("IsValid")
+                    b.Property<bool>("IsValid")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("IssuingAuthority")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("IssuingCountry")
-                        .HasColumnType("text");
-
-                    b.Property<string>("IssuingPost")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ModifiedBy")
+                    b.Property<int>("ModifiedBy")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("ModifiedOn")
+                    b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VisaClass")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("DocumentID");
 

@@ -14,5 +14,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TravelModeName, opt => opt.MapFrom(src => src.TravelMode.Description))
             .ForMember(dest => dest.CurrentStatusName, opt => opt.MapFrom(src => src.CurrentStatus.StatusName))
             .ForMember(dest => dest.SelectedTicketOptionName, opt => opt.MapFrom(src => src.SelectedTicketOption != null ? src.SelectedTicketOption.AirlineName : null));
+
+        //CreateMap<Document, PassportDTO>().ReverseMap();
+        //CreateMap<Document, VisaDTO>().ReverseMap();
+        //CreateMap<Document, IdentificationDTO>().ReverseMap();
     }
 }

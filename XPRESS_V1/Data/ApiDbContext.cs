@@ -26,6 +26,8 @@ namespace XPRESS_V1_Backend.Data
         public DbSet<TicketOption> TicketOptions { get; set; }
         public DbSet<RequestApproval> RequestApprovals { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<DocumentType> DocumentTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -148,6 +150,24 @@ namespace XPRESS_V1_Backend.Data
 
             modelBuilder.Entity<TravelRequest>()
                 .HasIndex(tr => tr.CurrentStatusId);
+            modelBuilder.Entity<Document>(entity =>
+            {
+                // Required fields (already enforced by attributes or design)
+                entity.Property(d => d.EmployeeID).IsRequired();
+                entity.Property(d => d.DocumentTypeID).IsRequired();
+                entity.Property(d => d.DocumentNumber).IsRequired();
+
+                // Optional fields — explicitly made nullable
+                entity.Property(d => d.IssuingCountry).IsRequired(false);
+                entity.Property(d => d.IssuingAuthority).IsRequired(false);
+                entity.Property(d => d.DocumentLink).IsRequired(false);
+                entity.Property(d => d.IsValid).IsRequired(false);
+                entity.Property(d => d.Comments).IsRequired(false);
+                entity.Property(d => d.CreatedBy).IsRequired(false);
+                entity.Property(d => d.CreatedOn).IsRequired(false);
+                entity.Property(d => d.ModifiedBy).IsRequired(false);
+                entity.Property(d => d.ModifiedOn).IsRequired(false);
+            });
         }
     }
 }
