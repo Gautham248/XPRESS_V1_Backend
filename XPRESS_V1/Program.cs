@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using XPRESS_V1_Backend.Data;
 using XPRESS_V1_Backend.Interfaces;
 using XPRESS_V1_Backend.Repositories;
@@ -21,7 +22,7 @@ builder.Services.AddScoped<ITravelRequestService, TravelRequestRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
 builder.Services.AddScoped<IUserService, UserRepository>();
 builder.Services.AddScoped<ITicketOptionService, TicketOptionRepository>();
-
+builder.Services.AddScoped<IMetricsRepository, MetricsRepository>();
 // For CORS error resolve
 builder.Services.AddCors(options =>
 {
@@ -45,9 +46,37 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "JWTWebApplication", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 var app = builder.Build();
 

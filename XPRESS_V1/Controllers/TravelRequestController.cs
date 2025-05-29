@@ -20,13 +20,15 @@ namespace XPRESS_V1_Backend.Controllers
         private readonly IAuditLogService _auditLogService;
         private readonly ApiDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IMetricsRepository _metricsRepository;
 
-        public TravelRequestController(ITravelRequestService travelRequestService, IAuditLogService auditLogService, ApiDbContext context, IMapper mapper)
+        public TravelRequestController(ITravelRequestService travelRequestService, IAuditLogService auditLogService, ApiDbContext context, IMapper mapper, IMetricsRepository metricsRepository)
         {
             _mapper = mapper;
             _travelRequestService = travelRequestService;
             _auditLogService = auditLogService;
             _context = context;
+            _metricsRepository = metricsRepository;
         }
 
         // Helper method to ensure UTC DateTime
@@ -274,5 +276,26 @@ namespace XPRESS_V1_Backend.Controllers
             
            
         }
+        [HttpGet("agency-bookings")]
+        [ProducesResponseType(typeof(IEnumerable<AgencyBookingMetricDto>), 200)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult<IEnumerable<AgencyBookingMetricDto>>> GetAgencyBookingMetrics([FromQuery] AgencyBookingFilterDto filterDto)
+        {
+            try
+            {
+                var metrics = await _metricsRepository.GetAgencyBookingMetricsAsync(
+                    filterDto.StartDate,
+                    filterDto.EndDate,
+                    filterDto.TravelTypeId
+                );
+                return Ok(metrics);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An internal server error occurred. Please try again later.");
+            }
+        }
+
+
     }
 }
