@@ -34,6 +34,9 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddScoped<IDocumentService, DocumentRepository>();
+builder.Services.AddAutoMapper(typeof(Program)); // If using AutoMapper
+
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
