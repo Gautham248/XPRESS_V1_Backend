@@ -37,6 +37,7 @@
         public string ProjectName { get; set; }
         public string TravelModeName { get; set; }
         public string CurrentStatusName { get; set; }
-        public string SelectedTicketOptionName { get; set; }
+        public int? SelectedTicketOptionId { get; set; }
+
     }
 }

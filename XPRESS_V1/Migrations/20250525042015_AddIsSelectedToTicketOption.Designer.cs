@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using XPRESS_V1_Backend.Data;
@@ -11,9 +12,11 @@ using XPRESS_V1_Backend.Data;
 namespace XPRESS_V1_Backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250525042015_AddIsSelectedToTicketOption")]
+    partial class AddIsSelectedToTicketOption
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,44 +40,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Riona");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Aadhar", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AadharNumber")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)");
-
-                    b.Property<string>("DocumentPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IDTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("IDTypeId");
-
-                    b.ToTable("Aadhars");
                 });
 
             modelBuilder.Entity("XPRESS_V1_Backend.Models.Advait", b =>
@@ -146,27 +111,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.ToTable("AuditLogs");
                 });
 
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.DocumentType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("TypeName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("TypeNumber")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IDTypes");
-                });
-
             modelBuilder.Entity("XPRESS_V1_Backend.Models.Mahesh", b =>
                 {
                     b.Property<int>("id")
@@ -186,55 +130,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Maheshs");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Passport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DocumentPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("IDTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("IssuingCountry")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("PassportNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("IDTypeId");
-
-                    b.ToTable("Passports");
                 });
 
             modelBuilder.Entity("XPRESS_V1_Backend.Models.Project", b =>
@@ -657,73 +552,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Visa", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DocumentPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("IDTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VisaClass")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("VisaNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("IDTypeId");
-
-                    b.ToTable("Visas");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Aadhar", b =>
-                {
-                    b.HasOne("XPRESS_V1_Backend.Models.User", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("XPRESS_V1_Backend.Models.DocumentType", "IDType")
-                        .WithMany("Aadhars")
-                        .HasForeignKey("IDTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("IDType");
-                });
-
             modelBuilder.Entity("XPRESS_V1_Backend.Models.AuditLog", b =>
                 {
                     b.HasOne("XPRESS_V1_Backend.Models.RequestStatus", "NewStatus")
@@ -755,25 +583,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Navigation("TravelRequest");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Passport", b =>
-                {
-                    b.HasOne("XPRESS_V1_Backend.Models.User", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("XPRESS_V1_Backend.Models.DocumentType", "IDType")
-                        .WithMany("Passports")
-                        .HasForeignKey("IDTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("IDType");
                 });
 
             modelBuilder.Entity("XPRESS_V1_Backend.Models.RequestApproval", b =>
@@ -898,34 +707,6 @@ namespace XPRESS_V1_Backend.Migrations
                     b.Navigation("DuHead");
 
                     b.Navigation("ReportingManager");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.Visa", b =>
-                {
-                    b.HasOne("XPRESS_V1_Backend.Models.User", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("XPRESS_V1_Backend.Models.DocumentType", "IDType")
-                        .WithMany("Visas")
-                        .HasForeignKey("IDTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("IDType");
-                });
-
-            modelBuilder.Entity("XPRESS_V1_Backend.Models.DocumentType", b =>
-                {
-                    b.Navigation("Aadhars");
-
-                    b.Navigation("Passports");
-
-                    b.Navigation("Visas");
                 });
 
             modelBuilder.Entity("XPRESS_V1_Backend.Models.Project", b =>

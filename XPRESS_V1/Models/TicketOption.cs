@@ -7,15 +7,13 @@ namespace XPRESS_V1_Backend.Models
     {
         [Key]
         public int OptionId { get; set; }
-
         [Required]
         public int RequestId { get; set; }
-
         [Required]
         public string OptionDescription { get; set; }
-
         [Required]
         public DateTime CreatedAt { get; set; }
+        public bool IsSelected { get; set; } = false;
 
         // Navigation properties
         [ForeignKey("RequestId")]

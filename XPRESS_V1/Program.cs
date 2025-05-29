@@ -20,8 +20,20 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ITravelRequestService, TravelRequestRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
 builder.Services.AddScoped<IUserService, UserRepository>();
-// Add these lines to your service configuration
-//builder.Services.AddScoped<IDocumentService, DocumentService>();/
+builder.Services.AddScoped<ITicketOptionService, TicketOptionRepository>();
+
+// For CORS error resolve
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // Add React app ports
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddScoped<IDocumentService, DocumentRepository>();
 builder.Services.AddAutoMapper(typeof(Program)); // If using AutoMapper
 
@@ -57,5 +69,6 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
-
+//Enable CORS
+app.UseCors("AllowReactApp");
 app.Run();

@@ -46,6 +46,7 @@ namespace XPRESS_V1_Backend.Repositories
                 .Include(tr => tr.Project)
                 .Include(tr => tr.TravelMode)
                 .Include(tr => tr.CurrentStatus)
+                .Include(tr => tr.SelectedTicketOption)
                 .FirstOrDefaultAsync(tr => tr.RequestId == requestId);
         }
 
