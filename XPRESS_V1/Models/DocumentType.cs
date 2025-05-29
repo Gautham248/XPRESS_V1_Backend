@@ -1,28 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace XPRESS_V1_Backend.Models
 {
     public class DocumentType
     {
-        [Key]
-        public int DocumentTypeID { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public string TypeName { get; set; }
+        public int TypeNumber { get; set; } // 1 = Passport, 2 = Visa, 3 = Aadhar
 
-        public string Description { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string TypeName { get; set; } // "Passport", "Visa", "Aadhar"
 
-        public bool RequiresExpiry { get; set; }
-
-        public bool IsRequired { get; set; }
-
-        public int CreatedBy { get; set; }
-
-        public DateTime CreatedOn { get; set; }
-
-        // Navigation Property
-        [JsonIgnore]
-        public ICollection<Document> Documents { get; set; }
+        // Navigation properties
+        public ICollection<Passport> Passports { get; set; }
+        public ICollection<Visa> Visas { get; set; }
+        public ICollection<Aadhar> Aadhars { get; set; }
     }
 }

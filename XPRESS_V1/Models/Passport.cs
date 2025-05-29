@@ -27,6 +27,10 @@ namespace XPRESS_V1_Backend.Models
         public int EmployeeId { get; set; }
         public User Employee { get; set; }
 
+        // Foreign key to IDType (will always be "Passport" type)
+        public int IDTypeId { get; set; }
+        public DocumentType IDType { get; set; }
+
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
     }

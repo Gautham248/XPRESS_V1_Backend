@@ -20,7 +20,10 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ITravelRequestService, TravelRequestRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
 builder.Services.AddScoped<IUserService, UserRepository>();
+// Add these lines to your service configuration
+//builder.Services.AddScoped<IDocumentService, DocumentService>();/
 builder.Services.AddScoped<IDocumentService, DocumentRepository>();
+builder.Services.AddAutoMapper(typeof(Program)); // If using AutoMapper
 
 // Add CORS policy
 builder.Services.AddCors(options =>

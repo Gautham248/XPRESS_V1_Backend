@@ -1,7 +1,9 @@
-﻿using XPRESS_V1_Backend.Data;
-using XPRESS_V1_Backend.Models;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using XPRESS_V1_Backend.Data;
 using XPRESS_V1_Backend.Interfaces;
+using XPRESS_V1_Backend.Models;
 using XPRESS_V1_Backend.Models.DTO;
 
 namespace XPRESS_V1_Backend.Repositories
@@ -9,200 +11,171 @@ namespace XPRESS_V1_Backend.Repositories
     public class DocumentRepository : IDocumentService
     {
         private readonly ApiDbContext _context;
+        private readonly IMapper _mapper;
 
-        public DocumentRepository(ApiDbContext context)
+        public DocumentRepository(ApiDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Document>> GetDocumentsByEmployeeIdAsync(int employeeId)
+        public async Task<DocumentDto> AddDocumentAsync(DocumentDto documentDto)
         {
-            return await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Employee)
-                .Where(d => d.EmployeeID == employeeId)
-                .ToListAsync();
+            switch (documentDto.IDTypeId)
+            {
+                case 1: // Passport
+                    var passport = _mapper.Map<Passport>(documentDto);
+                    passport.IsActive = true;
+                    _context.Passports.Add(passport);
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<DocumentDto>(passport);
+
+                case 2: // Visa
+                    var visa = _mapper.Map<Visa>(documentDto);
+                    visa.IsActive = true;
+                    _context.Visas.Add(visa);
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<DocumentDto>(visa);
+
+                case 3: // Aadhar
+                    var aadhar = _mapper.Map<Aadhar>(documentDto);
+                    aadhar.IsActive = true;
+                    _context.Aadhars.Add(aadhar);
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<DocumentDto>(aadhar);
+
+                default:
+                    throw new ArgumentException("Invalid document type ID");
+            }
         }
 
-        public async Task<IEnumerable<Document>> GetDocumentsByTypeAsync(int employeeId, int documentTypeId)
+        public async Task<DocumentDto> UpdateDocumentAsync(DocumentDto documentDto)
         {
-            return await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Employee)
-                .Where(d => d.EmployeeID == employeeId && d.DocumentTypeID == documentTypeId)
-                .ToListAsync();
+            switch (documentDto.IDTypeId)
+            {
+                case 1: // Passport
+                    var passport = await _context.Passports.FindAsync(documentDto.Id);
+                    if (passport == null) throw new KeyNotFoundException("Passport not found");
+                    _mapper.Map(documentDto, passport);
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<DocumentDto>(passport);
+
+                case 2: // Visa
+                    var visa = await _context.Visas.FindAsync(documentDto.Id);
+                    if (visa == null) throw new KeyNotFoundException("Visa not found");
+                    _mapper.Map(documentDto, visa);
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<DocumentDto>(visa);
+
+                case 3: // Aadhar
+                    var aadhar = await _context.Aadhars.FindAsync(documentDto.Id);
+                    if (aadhar == null) throw new KeyNotFoundException("Aadhar not found");
+                    _mapper.Map(documentDto, aadhar);
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<DocumentDto>(aadhar);
+
+                default:
+                    throw new ArgumentException("Invalid document type ID");
+            }
         }
 
-        public async Task<Document?> GetDocumentByIdAsync(int documentId)
+        public async Task<bool> DeleteDocumentAsync(int documentId, int idTypeId)
         {
-            return await _context.Documents
-                .Include(d => d.DocumentType)
-                //.Include(d => d.Employee)
-                .FirstOrDefaultAsync(d => d.DocumentID == documentId);
-        }
+            switch (idTypeId)
+            {
+                case 1: // Passport
+                    var passport = await _context.Passports.FindAsync(documentId);
+                    if (passport == null) return false;
+                    //passport.IsActive = false;
+                    _context.Passports.Remove(passport);
+                    break;
 
-        public async Task<Document> AddDocumentAsync(Document document)
-        {
-            await _context.Documents.AddAsync(document);
-            await _context.SaveChangesAsync();
-            return document;
-        }
+                case 2: // Visa
+                    var visa = await _context.Visas.FindAsync(documentId);
+                    if (visa == null) return false;
+                    //visa.IsActive = false;
+                    _context.Visas.Remove(visa);
+                    break;
 
-        public async Task<Document> UpdateDocumentAsync(Document document)
-        {
-            _context.Documents.Update(document);
-            await _context.SaveChangesAsync();
-            return document;
-        }
+                case 3: // Aadhar
+                    var aadhar = await _context.Aadhars.FindAsync(documentId);
+                    if (aadhar == null) return false;
+                    //aadhar.IsActive = false;
+                    _context.Aadhars.Remove(aadhar);
+                    break;
 
-        public async Task<bool> DeleteDocumentAsync(int documentId)
-        {
-            var document = await _context.Documents.FindAsync(documentId);
-            if (document == null)
-                return false;
+                default:
+                    throw new ArgumentException("Invalid document type ID");
+            }
 
-            _context.Documents.Remove(document);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        // AddDocument with DTO
-        public async Task<Document?> AddDocumentAsync(object dto, int documentTypeId)
+        public async Task<List<DocumentDto>> GetAllDocumentsByEmployeeAsync(int employeeId)
         {
-            Document? document = null;
+            var passports = await _context.Passports
+                .Where(p => p.EmployeeId == employeeId && p.IsActive)
+                .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-            switch (dto)
-            {
-                case VisaDTO visa when visa.ExpiryDate > DateTime.Today:
-                    document = new Document
-                    {
-                        DocumentNumber = visa.DocumentNumber,
-                        VisaClass = visa.VisaClass,
-                        IssuingCountry = visa.IssuingCountry,
-                        IssuingPost = visa.IssuingPost,
-                        IssueDate = visa.IssueDate,
-                        ExpiryDate = visa.ExpiryDate,
-                        DocumentTypeID = documentTypeId,
-                        EmployeeID = visa.EmployeeID
-                    };
-                    break;
+            var visas = await _context.Visas
+                .Where(v => v.EmployeeId == employeeId && v.IsActive)
+                .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-                case PassportDTO passport when passport.ExpiryDate > DateTime.Today:
-                    document = new Document
-                    {
-                        DocumentNumber = passport.DocumentNumber,
-                        IssuingCountry = passport.IssuingCountry,
-                        IssueDate = passport.IssueDate,
-                        ExpiryDate = passport.ExpiryDate,
-                        DocumentTypeID = documentTypeId,
-                        EmployeeID = passport.EmployeeID
-                    };
-                    break;
+            var aadhars = await _context.Aadhars
+                .Where(a => a.EmployeeId == employeeId && a.IsActive)
+                .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-                case VoterIDDTO voter:
-                    document = new Document
-                    {
-                        DocumentNumber = voter.DocumentNumber,
-                        IssuingCountry = voter.IssuingCountry,
-                        IssueDate = voter.IssueDate,
-                        ExpiryDate = voter.ExpiryDate,
-                        DocumentTypeID = documentTypeId,
-                        EmployeeID = voter.EmployeeID
-                    };
-                    break;
-
-                case AadharDTO aadhar when !string.IsNullOrEmpty(aadhar.DocumentNumber):
-                    document = new Document
-                    {
-                        DocumentNumber = aadhar.DocumentNumber,
-                        IssuingCountry = aadhar.IssuingCountry,
-                        IssueDate = aadhar.IssueDate,
-                        ExpiryDate = aadhar.ExpiryDate,
-                        DocumentTypeID = documentTypeId,
-                        EmployeeID = aadhar.EmployeeID
-                    };
-                    break;
-
-                case DrivingLicenceDTO dl when dl.ExpiryDate > DateTime.Today:
-                    document = new Document
-                    {
-                        DocumentNumber = dl.DocumentNumber,
-                        IssuingCountry = dl.IssuingCountry,
-                        IssueDate = dl.IssueDate,
-                        ExpiryDate = dl.ExpiryDate,
-                        DocumentTypeID = documentTypeId,
-                        EmployeeID = dl.EmployeeID
-                    };
-                    break;
-
-                default:
-                    return null;
-            }
-
-            await _context.Documents.AddAsync(document);
-            await _context.SaveChangesAsync();
-            return document;
+            return passports.Concat(visas).Concat(aadhars).ToList();
         }
 
-
-        // UpdateDocument with DTO
-        public async Task<Document?> UpdateDocumentAsync(int documentId, object dto, int documentTypeId)
+        public async Task<List<DocumentDto>> GetDocumentsByTypeAsync(int employeeId, int idTypeId)
         {
-            var existing = await _context.Documents.FirstOrDefaultAsync(d => d.DocumentID == documentId);
-            if (existing == null) return null;
-
-            switch (dto)
+            return idTypeId switch
             {
-                case VisaDTO visa when visa.ExpiryDate > DateTime.Today:
-                    existing.DocumentNumber = visa.DocumentNumber;
-                    existing.VisaClass = visa.VisaClass;
-                    existing.IssuingCountry = visa.IssuingCountry;
-                    existing.IssuingPost = visa.IssuingPost;
-                    existing.IssueDate = visa.IssueDate;
-                    existing.ExpiryDate = visa.ExpiryDate;
-                    existing.EmployeeID = visa.EmployeeID;
-                    break;
+                1 => await _context.Passports
+                    .Where(p => p.EmployeeId == employeeId && p.IsActive)
+                    .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                    .ToListAsync(),
 
-                case PassportDTO passport when passport.ExpiryDate > DateTime.Today:
-                    existing.DocumentNumber = passport.DocumentNumber;
-                    existing.IssuingCountry = passport.IssuingCountry;
-                    existing.IssueDate = passport.IssueDate;
-                    existing.ExpiryDate = passport.ExpiryDate;
-                    existing.EmployeeID = passport.EmployeeID;
-                    break;
+                2 => await _context.Visas
+                    .Where(v => v.EmployeeId == employeeId && v.IsActive)
+                    .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                    .ToListAsync(),
 
-                case VoterIDDTO voter:
-                    existing.DocumentNumber = voter.DocumentNumber;
-                    existing.IssuingCountry = voter.IssuingCountry;
-                    existing.IssueDate = voter.IssueDate;
-                    existing.ExpiryDate = voter.ExpiryDate;
-                    existing.EmployeeID = voter.EmployeeID;
-                    break;
+                3 => await _context.Aadhars
+                    .Where(a => a.EmployeeId == employeeId && a.IsActive)
+                    .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                    .ToListAsync(),
 
-                case AadharDTO aadhar when !string.IsNullOrEmpty(aadhar.DocumentNumber):
-                    existing.DocumentNumber = aadhar.DocumentNumber;
-                    existing.IssuingCountry = aadhar.IssuingCountry;
-                    existing.IssueDate = aadhar.IssueDate;
-                    existing.ExpiryDate = aadhar.ExpiryDate;
-                    existing.EmployeeID = aadhar.EmployeeID;
-                    break;
-
-                case DrivingLicenceDTO dl when dl.ExpiryDate > DateTime.Today:
-                    existing.DocumentNumber = dl.DocumentNumber;
-                    existing.IssuingCountry = dl.IssuingCountry;
-                    existing.IssueDate = dl.IssueDate;
-                    existing.ExpiryDate = dl.ExpiryDate;
-                    existing.EmployeeID = dl.EmployeeID;
-                    break;
-
-                default:
-                    return null;
-            }
-
-            _context.Documents.Update(existing);
-            await _context.SaveChangesAsync();
-            return existing;
+                _ => throw new ArgumentException("Invalid document type ID")
+            };
         }
 
+        public async Task<DocumentDto> GetDocumentByIdAsync(int documentId, int idTypeId)
+        {
+            return idTypeId switch
+            {
+                1 => await _context.Passports
+                    .Where(p => p.Id == documentId && p.IsActive)
+                    .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(),
+
+                2 => await _context.Visas
+                    .Where(v => v.Id == documentId && v.IsActive)
+                    .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(),
+
+                3 => await _context.Aadhars
+                    .Where(a => a.Id == documentId && a.IsActive)
+                    .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(),
+
+                _ => throw new ArgumentException("Invalid document type ID")
+            };
+        }
     }
 }
