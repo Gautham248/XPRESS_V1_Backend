@@ -7,7 +7,11 @@ namespace XPRESS_V1_Backend.Models
         public int Id { get; set; }
 
         [StringLength(50)]
-        public string? VisaNumber { get; set; } // Nullable as per requirement
+        public string? VisaNumber { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string IssuingCountry { get; set; }
 
         [Required]
         public DateTime IssueDate { get; set; }

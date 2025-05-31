@@ -10,6 +10,8 @@ namespace XPRESS_V1_Backend.Models
         [StringLength(12, MinimumLength = 12)]
         public string AadharNumber { get; set; } // Aadhar numbers are 12 digits
 
+        public string AadharName { get; set; }
+
         [Required]
         public string DocumentPath { get; set; } // Path to the uploaded document file
 
