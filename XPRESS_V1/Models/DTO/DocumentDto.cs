@@ -24,6 +24,6 @@
         // Aadhar specific fields
         public string AadharNumber { get; set; }
         public string FullName { get; set; }
-        public DateTime? DateOfBirth { get; set; }
+        
     }
 }
